@@ -3,11 +3,16 @@ package io.imast.samples.scheduler.config;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import io.imast.core.mongo.SimplePojoRegistries;
+import io.imast.core.mongo.StringIdGenerator;
+import io.imast.core.scheduler.JobDefinition;
 import io.imast.core.scheduler.JobSchedulerCtl;
+import io.imast.core.scheduler.agent.AgentDefinition;
 import io.imast.core.scheduler.impl.AgentDefinitionMongoRepository;
 import io.imast.core.scheduler.impl.JobDefinitionMongoRepository;
 import io.imast.core.scheduler.impl.JobIterationMongoRepository;
+import io.imast.core.scheduler.iterate.JobIteration;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.codecs.pojo.ClassModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,9 +47,7 @@ public class MainConfiguration {
     @Lazy
     @Bean
     public MongoDatabase mongoDatabase(){
-        return MongoClients.create(this.mongoUri)
-                .getDatabase(this.databaseName)
-                .withCodecRegistry(SimplePojoRegistries.simple());
+        return MongoClients.create(this.mongoUri).getDatabase(this.databaseName);
     }
     
     /**

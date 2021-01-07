@@ -50,7 +50,7 @@ public class JobsController {
      * @return Returns metadata
      */
     @PostMapping(path = "_metadata")
-    public ResponseEntity<?> statusExchange(@RequestBody JobMetadataRequest request){
+    public ResponseEntity<?> metadataExchange(@RequestBody JobMetadataRequest request){
         return ResponseEntity.ok(this.schedulerCtl.getMetadata(request));
     }
     

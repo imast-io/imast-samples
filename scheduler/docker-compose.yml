@@ -2,8 +2,11 @@ version: '3.5'
 
 volumes: 
   imast-mysql-volume: 
+    name: imast-mysql-volume
   imast-mongo-data-volume:
+    name: imast-mongo-data-volume
   imast-mongo-logs-volume:
+    name: imast-mongo-logs-volume
 
 
 networks:
@@ -17,6 +20,7 @@ services:
     restart: always
     build: ./mysqlcluster
     container_name: mysqlcluster
+    env_file: ./mysqlcluster/cred.env
     ports:
       - '8810:8810'
     networks:
@@ -48,6 +52,27 @@ services:
       - imastnetwork
     depends_on:
       - mongoctl
+      
+  worker-super:
+    image: worker  
+    build: ./worker
+    container_name: worker
+    environment:
+      - IMAST_WORKER_ROLE=SUPERVISOR
+    networks:
+      - imastnetwork
+    depends_on:
+      - mysqlcluster
+      
+  worker:
+    image: worker  
+    build: ./worker
+    environment:
+      - IMAST_WORKER_ROLE=WORKER
+    networks:
+      - imastnetwork
+    depends_on:
+      - mysqlcluster
       
 
 
