@@ -1,6 +1,7 @@
 package io.imast.samples.scheduler.worker;
 
 import io.imast.core.client.ReactiveBaseClient;
+import io.imast.core.client.ReactiveUtils;
 import io.imast.core.discovery.DiscoveryClient;
 import io.imast.core.scheduler.JobDefinition;
 import io.imast.core.scheduler.JobStatus;
@@ -50,12 +51,12 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .post()
                 .uri(url)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToMono(JobMetadataResponse.class).blockOptional();   
+                .bodyToMono(JobMetadataResponse.class));   
     }
 
     /**
@@ -73,12 +74,12 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .post()
                 .uri(url)
                 .body(BodyInserters.fromValue(status))
                 .retrieve()
-                .bodyToMono(JobStatusExchangeResponse.class).blockOptional();     
+                .bodyToMono(JobStatusExchangeResponse.class));     
     }
 
     /**
@@ -97,12 +98,12 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .post()
                 .uri(url)
                 .body(BodyInserters.fromValue(iteration))
                 .retrieve()
-                .bodyToMono(JobIteration.class).blockOptional();     
+                .bodyToMono(JobIteration.class));     
     }
 
     /**
@@ -121,11 +122,11 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .put()
                 .uri(url)
                 .retrieve()
-                .bodyToMono(JobDefinition.class).blockOptional();  
+                .bodyToMono(JobDefinition.class));  
     }
 
     /**
@@ -144,12 +145,12 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .post()
                 .uri(url)
                 .body(BodyInserters.fromValue(agent))
                 .retrieve()
-                .bodyToMono(AgentDefinition.class).blockOptional();      
+                .bodyToMono(AgentDefinition.class));      
     }
 
     /**
@@ -168,11 +169,11 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChann
                 .toUriString();
         
         // get the mono stream
-        return this.webClient
+        return ReactiveUtils.blockOptional(this.webClient
                 .put()
                 .uri(url)
                 .body(BodyInserters.fromValue(health))
                 .retrieve()
-                .bodyToMono(AgentDefinition.class).blockOptional();
+                .bodyToMono(AgentDefinition.class));
     }
 }

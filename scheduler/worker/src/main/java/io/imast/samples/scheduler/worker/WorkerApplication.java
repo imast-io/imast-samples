@@ -2,12 +2,10 @@ package io.imast.samples.scheduler.worker;
 
 import io.imast.core.Lang;
 import io.imast.core.scheduler.ClusteringType;
-import io.imast.core.scheduler.JobConstants;
 import io.imast.core.scheduler.JobFactory;
 import io.imast.core.scheduler.WorkerController;
 import io.imast.core.scheduler.WorkerControllerConfig;
 import io.imast.core.scheduler.WorkerException;
-import io.imast.core.scheduler.quartz.DryRunJob;
 import java.time.Duration;
 /**
  * The client test app
@@ -49,7 +47,10 @@ public class WorkerApplication {
         var jobFactory = new JobFactory();
         
         // add a simple test job
-        jobFactory.registerJobClass(JobConstants.DRY_RUN_JOB_TYPE, DryRunJob.class);
+        jobFactory.registerJobClass("WAIT_JOB_TYPE", WaitJob.class);
+        
+        // add modules for jobs
+        jobFactory.registerModule("WAIT_JOB_TYPE", "WAITER", new WaiterModule());
         
         // the localhost discovery client (use null in docker environment)
         var discovery = new SimpleDiscoveryClient(null);

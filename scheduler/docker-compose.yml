@@ -56,7 +56,7 @@ services:
   worker-super:
     image: worker  
     build: ./worker
-    container_name: worker
+    container_name: worker_super
     environment:
       - IMAST_WORKER_ROLE=SUPERVISOR
     networks:
