@@ -57,6 +57,6 @@ public class MainConfiguration {
         var agents = new AgentDefinitionMongoRepository(this.mongoDatabase());
         var iterations = new JobIterationMongoRepository(this.mongoDatabase());
                 
-        return new JobSchedulerCtl(definitions, iterations, agents);
+        return new JobSchedulerCtl(definitions, iterations, agents).initialize();
     }
 }

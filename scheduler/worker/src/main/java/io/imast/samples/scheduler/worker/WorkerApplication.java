@@ -19,7 +19,7 @@ public class WorkerApplication {
      */
     public static void main(String[] args){
         
-        var local = true;
+        var local = false;
         
         // indicate if agent (worker) is acting as supervisor
         // Note: any cluster should have only one supervising instance
