@@ -78,17 +78,17 @@
             <version>2.9.2</version>
             <scope>compile</scope>
         </dependency>
-        
+                
         <dependency>
             <groupId>io.imast</groupId>
-            <artifactId>scheduler-controller</artifactId>
-            <version>1.0.0</version>
+            <artifactId>work4j-data-mongo</artifactId>
+            <version>0.0.1.PREVIEW</version>
         </dependency>
         
         <dependency>
             <groupId>io.imast</groupId>
-            <artifactId>scheduler-data-mongo</artifactId>
-            <version>1.0.0</version>
+            <artifactId>work4j-controller</artifactId>
+            <version>0.0.1.PREVIEW</version>
         </dependency>
         
     </dependencies>

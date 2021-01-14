@@ -17,6 +17,13 @@
 
     <dependencies>  
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+            <scope>provided</scope>
+        </dependency>
+        
 	<dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
@@ -25,8 +32,20 @@
         
         <dependency>
             <groupId>io.imast</groupId>
-            <artifactId>scheduler-worker</artifactId>
-            <version>1.0.0</version>
+            <artifactId>work4j-worker</artifactId>
+            <version>0.0.1.PREVIEW</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.imast</groupId>
+            <artifactId>work4j-model</artifactId>
+            <version>0.0.1.PREVIEW</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.imast</groupId>
+            <artifactId>work4j-channel</artifactId>
+            <version>0.0.1.PREVIEW</version>
         </dependency>
         
 	<dependency>

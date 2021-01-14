@@ -3,16 +3,11 @@ package io.imast.samples.scheduler.worker;
 import io.imast.core.client.ReactiveBaseClient;
 import io.imast.core.client.ReactiveUtils;
 import io.imast.core.discovery.DiscoveryClient;
-import io.imast.core.scheduler.JobDefinition;
-import io.imast.core.scheduler.JobStatus;
-import io.imast.core.scheduler.agent.AgentDefinition;
-import io.imast.core.scheduler.agent.AgentHealth;
-import io.imast.core.scheduler.api.WorkerChannel;
-import io.imast.core.scheduler.exchange.JobMetadataRequest;
-import io.imast.core.scheduler.exchange.JobMetadataResponse;
-import io.imast.core.scheduler.exchange.JobStatusExchangeRequest;
-import io.imast.core.scheduler.exchange.JobStatusExchangeResponse;
-import io.imast.core.scheduler.iterate.JobIteration;
+import io.imast.work4j.channel.SchedulerChannel;
+import io.imast.work4j.model.exchange.*;
+import io.imast.work4j.model.iterate.*;
+import io.imast.work4j.model.agent.*;
+import io.imast.work4j.model.*;
 import java.util.Optional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * 
  * @author davitp
  */
-public class WorkerChannelImpl extends ReactiveBaseClient implements WorkerChannel {
+public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerChannel {
 
     /**
      * Creates new worker channel

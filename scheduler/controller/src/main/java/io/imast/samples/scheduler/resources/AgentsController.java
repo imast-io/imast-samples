@@ -1,8 +1,8 @@
 package io.imast.samples.scheduler.resources;
 
-import io.imast.core.scheduler.JobSchedulerCtl;
-import io.imast.core.scheduler.agent.AgentDefinition;
-import io.imast.core.scheduler.agent.AgentHealth;
+import io.imast.work4j.controller.JobSchedulerCtl;
+import io.imast.work4j.model.agent.AgentDefinition;
+import io.imast.work4j.model.agent.AgentHealth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

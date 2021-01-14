@@ -1,12 +1,11 @@
 package io.imast.samples.scheduler.resources;
 
-
-import io.imast.core.scheduler.JobDefinition;
-import io.imast.core.scheduler.JobSchedulerCtl;
-import io.imast.core.scheduler.JobStatus;
-import io.imast.core.scheduler.exchange.JobMetadataRequest;
-import io.imast.core.scheduler.exchange.JobStatusExchangeRequest;
-import io.imast.core.scheduler.iterate.JobIteration;
+import io.imast.work4j.controller.JobSchedulerCtl;
+import io.imast.work4j.model.JobDefinition;
+import io.imast.work4j.model.JobStatus;
+import io.imast.work4j.model.exchange.JobMetadataRequest;
+import io.imast.work4j.model.exchange.JobStatusExchangeRequest;
+import io.imast.work4j.model.iterate.JobIteration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +50,7 @@ public class JobsController {
      */
     @PostMapping(path = "_metadata")
     public ResponseEntity<?> metadataExchange(@RequestBody JobMetadataRequest request){
-        return ResponseEntity.ok(this.schedulerCtl.getMetadata(request));
+        return ResponseEntity.of(this.schedulerCtl.metadata(request));
     }
     
     /**
@@ -74,7 +73,7 @@ public class JobsController {
      */
     @PostMapping(path = "{id}/_iterations")
     public ResponseEntity<?> iterate(@PathVariable String id, @RequestBody JobIteration iteration){
-        return ResponseEntity.of(this.schedulerCtl.addIteration(iteration));
+        return ResponseEntity.of(this.schedulerCtl.iterate(iteration));
     }
     
     /**

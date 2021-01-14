@@ -1,7 +1,7 @@
 package io.imast.samples.scheduler.worker;
 
 import io.imast.core.Zdt;
-import io.imast.core.scheduler.quartz.BaseQuartzJob;
+import io.imast.work4j.worker.job.BaseQuartzJob;
 import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
@@ -65,6 +65,5 @@ public class WaitJob extends BaseQuartzJob {
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         this.executeImpl(arg0);
-    }
-    
+    } 
 }
