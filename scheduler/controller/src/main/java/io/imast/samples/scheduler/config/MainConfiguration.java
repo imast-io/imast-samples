@@ -53,7 +53,6 @@ public class MainConfiguration {
     @Lazy
     @Bean
     public SchedulerController schedulerCtl(){
-        
         return SchedulerControllerBuilder
                 .newBuilder()
                 .withJobDefinitions(new JobDefinitionMongoRepository(this.mongoDatabase()))

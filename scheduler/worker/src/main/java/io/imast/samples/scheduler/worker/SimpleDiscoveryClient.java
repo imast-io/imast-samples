@@ -27,5 +27,4 @@ public class SimpleDiscoveryClient extends StaticDiscoveryClient {
     private static Map<String, Integer> getPorts(){
         return Map.of("controller", 8801);
     }
-    
 }
