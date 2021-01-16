@@ -2,7 +2,8 @@ package io.imast.samples.scheduler.config;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import io.imast.work4j.controller.JobSchedulerCtl;
+import io.imast.work4j.controller.SchedulerController;
+import io.imast.work4j.controller.SchedulerControllerBuilder;
 import io.imast.work4j.data.impl.AgentDefinitionMongoRepository;
 import io.imast.work4j.data.impl.JobDefinitionMongoRepository;
 import io.imast.work4j.data.impl.JobIterationMongoRepository;
@@ -51,12 +52,13 @@ public class MainConfiguration {
      */
     @Lazy
     @Bean
-    public JobSchedulerCtl schedulerCtl(){
+    public SchedulerController schedulerCtl(){
         
-        var definitions = new JobDefinitionMongoRepository(this.mongoDatabase());
-        var agents = new AgentDefinitionMongoRepository(this.mongoDatabase());
-        var iterations = new JobIterationMongoRepository(this.mongoDatabase());
-                
-        return new JobSchedulerCtl(definitions, iterations, agents);
+        return SchedulerControllerBuilder
+                .newBuilder()
+                .withJobDefinitions(new JobDefinitionMongoRepository(this.mongoDatabase()))
+                .withJobIterations(new JobIterationMongoRepository(this.mongoDatabase()))
+                .withAgents(new AgentDefinitionMongoRepository(this.mongoDatabase()))
+                .build();
     }
 }

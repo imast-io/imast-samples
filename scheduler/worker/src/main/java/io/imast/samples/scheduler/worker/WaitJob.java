@@ -22,15 +22,7 @@ public class WaitJob extends BaseQuartzJob {
      * @throws JobExecutionException 
      */
     private void executeImpl(JobExecutionContext arg0) throws JobExecutionException {
-        
-        // get job definition
-        var definition = this.getJobDefinition(arg0);
-        
-        // make sure there is definition
-        if(definition == null){
-            throw new JobExecutionException("No Job Definition Found");
-        }
-        
+            
         // get waiter module for this job type
         var waiter = this.<WaiterModule>getContextModule("WAITER", arg0);
         
@@ -39,21 +31,15 @@ public class WaitJob extends BaseQuartzJob {
             throw new JobExecutionException("A waiter module is required for this job");
         }
         
-        // get code from job 
-        var code = definition.getCode();
-        
-        // the job data 
-        var data = definition.getJobData().getData();
-        
         // get time to wait (1 sec by default)
-        var timeToWait = (int)data.getOrDefault("TIME", 1000);
+        var timeToWait = (int)this.getDataValue(arg0, "TIME", 1000);
         
-        log.info(String.format("Started Wait Job %s at %s. Waiting %s milliseconds...", code, Zdt.now(ZoneId.systemDefault().toString()), timeToWait));
+        log.info(String.format("Started Wait Job %s at %s. Waiting %s milliseconds...", this.getCode(arg0), Zdt.now(ZoneId.systemDefault().toString()), timeToWait));
 
         // wait for...
         waiter.waitMillis(timeToWait);
         
-        log.info(String.format("Completed Wait Job %s (for %s milliseconds) at %s", code, timeToWait, Zdt.now(ZoneId.systemDefault().toString())));
+        log.info(String.format("Completed Wait Job %s (for %s milliseconds) at %s", this.getCode(arg0), timeToWait, Zdt.now(ZoneId.systemDefault().toString())));
     }
     
     /**

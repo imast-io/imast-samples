@@ -1,6 +1,6 @@
 package io.imast.samples.scheduler.resources;
 
-import io.imast.work4j.controller.JobSchedulerCtl;
+import io.imast.work4j.controller.SchedulerController;
 import io.imast.work4j.model.JobDefinition;
 import io.imast.work4j.model.JobStatus;
 import io.imast.work4j.model.exchange.JobMetadataRequest;
@@ -29,7 +29,7 @@ public class JobsController {
      * The job scheduler controller
      */
     @Autowired
-    private JobSchedulerCtl schedulerCtl;
+    private SchedulerController schedulerCtl;
     
     /**
      * Add a job definition to controller

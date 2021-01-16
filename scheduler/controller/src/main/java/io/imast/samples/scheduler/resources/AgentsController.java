@@ -1,6 +1,6 @@
 package io.imast.samples.scheduler.resources;
 
-import io.imast.work4j.controller.JobSchedulerCtl;
+import io.imast.work4j.controller.SchedulerController;
 import io.imast.work4j.model.agent.AgentDefinition;
 import io.imast.work4j.model.agent.AgentHealth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class AgentsController {
      * The scheduler controller
      */
     @Autowired
-    private JobSchedulerCtl schedulerCtl;
+    private SchedulerController schedulerCtl;
     
     /**
      * Create and store agent
