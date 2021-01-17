@@ -32,7 +32,7 @@ public class WaitJob extends BaseQuartzJob {
         }
         
         // get time to wait (1 sec by default)
-        var timeToWait = (int)this.getDataValue(arg0, "TIME", 1000);
+        var timeToWait = this.getDataValue(arg0, "TIME", 1000);
         
         log.info(String.format("Started Wait Job %s at %s. Waiting %s milliseconds...", this.getCode(arg0), Zdt.now(ZoneId.systemDefault().toString()), timeToWait));
 
