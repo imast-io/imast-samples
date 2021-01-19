@@ -1,0 +1,32 @@
+management:
+  security:  
+    enabled: false  
+    
+spring:
+  application:
+    name: eureka
+  
+server:
+  port: 28000
+  connection-timeout: 900000
+
+eureka:
+  instance:
+    hostname: eureka
+    leaseRenewalIntervalInSeconds: 10
+    prefer-ip-address: true
+    leaseExpirationDurationInSeconds: 3    
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+     defaultZone: ${SAMPLE_EUREKA_DEFAULT:http://localhost:28000/eureka}
+  server:
+    waitTimeInMsWhenSyncEmpty: 0  
+    peer-node-read-timeout-ms: 3000
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      ${SAMPLE_EUREKA_DEFAULT:http://localhost:28000/eureka}
+
+  
