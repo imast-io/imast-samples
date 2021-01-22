@@ -69,7 +69,7 @@ public class WorkerApplication {
         var workerController = Try.of(() -> WorkerControllerBuilder
                 .builder(config)
                 .withChannel(channel)
-                .withJob("WAIT_JOB_TYPE", WaitJob.class)
+                .withJobExecutor("WAIT_JOB_TYPE", context -> new WaitJob(context))
                 .withModule("WAIT_JOB_TYPE", "WAITER", new WaiterModule())
                 .build()).getOrNull();
         
