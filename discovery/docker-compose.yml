@@ -1,0 +1,20 @@
+version: '3.5'
+
+networks:
+  imastsamples:
+    name: imastsamples
+
+services:  
+
+  eureka:
+    image: imast_samples_eureka  
+    build: ./eureka
+    container_name: eureka
+    ports:
+      - '28000:28000'
+    networks:
+      - imastsamples
+    
+      
+
+

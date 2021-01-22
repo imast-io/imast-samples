@@ -27,3 +27,4 @@ hs_err_pid*
 **/target/**
 /scheduler/worker/target/
 /scheduler/controller/target/
+/discovery/eureka/target/
