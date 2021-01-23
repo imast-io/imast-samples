@@ -41,7 +41,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
         
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/jobs/_metadata"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/jobs/_metadata"))
                 .build()
                 .toUriString();
         
@@ -64,7 +64,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
     public Optional<JobStatusExchangeResponse> statusExchange(JobStatusExchangeRequest status) {
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/jobs/_exchange"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/jobs/_exchange"))
                 .build()
                 .toUriString();
         
@@ -88,7 +88,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
         
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(String.format(this.getApiUrl("api/v1/jobs/%s/_iterations"), iteration.getJobId()))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/iterations"))
                 .build()
                 .toUriString();
         
@@ -112,7 +112,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
     public Optional<JobDefinition> markAs(String id, JobStatus status) {
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(String.format(this.getApiUrl("api/v1/jobs/%s/_status?status=%s"), id, status))
+                .fromUriString(String.format(this.getApiUrl("api/v1/scheduler/jobs/%s/status?status=%s"), id, status))
                 .build()
                 .toUriString();
         
@@ -135,7 +135,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
 
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/agents"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/agents"))
                 .build()
                 .toUriString();
         
@@ -159,7 +159,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
     public Optional<AgentDefinition> heartbeat(String id, AgentHealth health) {
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl(String.format("api/v1/agents/%s/health", id)))
+                .fromUriString(this.getApiUrl(String.format("api/v1/scheduler/agents/%s/health", id)))
                 .build()
                 .toUriString();
         
