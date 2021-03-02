@@ -65,7 +65,7 @@ public class MainConfiguration {
     public SchedulerMongoRepisotory schedulerDataRepository(){
         
         // create new repository
-        var repo = new SchedulerMongoRepisotory(this.mongoClient(), this.mongoDatabase());
+        var repo = new SchedulerMongoRepisotory(this.mongoClient(), this.mongoDatabase(), false);
         
         // make sure schema is ready
         repo.ensureSchema();
