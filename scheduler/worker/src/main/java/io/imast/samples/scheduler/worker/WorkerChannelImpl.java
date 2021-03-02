@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * The implementation of worker channel.
+ * 
  * This implementation assumes there is a setup service called controller based on REST protocol.
  * You can implement based on your needs.
  * 
@@ -71,7 +72,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
      * @return Returns executions response
      */
     @Override
-    public Mono<ExecutionsResponse> executions(List<String> ids){
+    public Mono<List<JobExecution>> executions(List<String> ids){
         // build URL
         var url = UriComponentsBuilder
                 .fromUriString(this.getApiUrl("api/v1/scheduler/executions"))
@@ -84,7 +85,8 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
                 .get()
                 .uri(url)
                 .retrieve()
-                .bodyToMono(ExecutionsResponse.class);
+                .bodyToMono(JobExecution[].class)
+                .map(Arrays::asList);
     }
     
     /**
@@ -178,7 +180,7 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
         
         // get the mono stream
         return this.webClient
-                .post()
+                .put()
                 .uri(url)
                 .body(BodyInserters.fromValue(heartbeat))
                 .retrieve()

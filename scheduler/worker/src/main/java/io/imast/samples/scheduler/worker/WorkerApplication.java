@@ -71,8 +71,8 @@ public class WorkerApplication {
                 .builder(config)
                 .withChannel(channel)
                 .withWorker(new WorkerConnector(channel).connect(config))
-                .withJobExecutor("WAIT_JOB_TYPE", context -> new WaitJob(context))
-                .withModule("WAIT_JOB_TYPE", "WAITER", new WaiterModule())
+                .withJobExecutor("WAIT_JOB", context -> new WaitJob(context))
+                .withModule("WAIT_JOB", "WAITER", new WaiterModule())
                 .build()).getOrNull();
         
         try {

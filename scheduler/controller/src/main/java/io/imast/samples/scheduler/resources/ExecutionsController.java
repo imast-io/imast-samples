@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -110,7 +111,7 @@ public class ExecutionsController {
      * @param input The job execution update to add
      * @return Returns updated entity
      */
-    @PostMapping(path = "{id}")
+    @PutMapping(path = "{id}")
     public ResponseEntity<?> updateOne(@PathVariable String id, @RequestBody ExecutionUpdateInput input){
         return ResponseEntity.ok(this.schedulerController.updateExecution(id, input));
     }
