@@ -43,11 +43,11 @@ public class WaitJob extends JobExecutorBase {
         // get time to wait (1 sec by default)
         var timeToWait = this.context.getValue("TIME", 1000);
         
-        log.info(String.format("Started Wait Job %s at %s. Waiting %s milliseconds...", this.context.getCode(), Zdt.now(ZoneId.systemDefault().toString()), timeToWait));
+        log.info(String.format("Started Wait Job %s at %s. Waiting %s milliseconds...", this.context.getName(), Zdt.now(ZoneId.systemDefault().toString()), timeToWait));
 
         // wait for...
         waiter.waitMillis(timeToWait);
         
-        log.info(String.format("Completed Wait Job %s (for %s milliseconds) at %s", this.context.getCode(), timeToWait, Zdt.now(ZoneId.systemDefault().toString())));
+        log.info(String.format("Completed Wait Job %s (for %s milliseconds) at %s", this.context.getName(), timeToWait, Zdt.now(ZoneId.systemDefault().toString())));
     }
 }

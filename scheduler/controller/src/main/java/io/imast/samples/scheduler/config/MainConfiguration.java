@@ -1,12 +1,11 @@
 package io.imast.samples.scheduler.config;
 
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import io.imast.work4j.controller.SchedulerController;
 import io.imast.work4j.controller.SchedulerControllerBuilder;
-import io.imast.work4j.data.impl.AgentDefinitionMongoRepository;
-import io.imast.work4j.data.impl.JobDefinitionMongoRepository;
-import io.imast.work4j.data.impl.JobIterationMongoRepository;
+import io.imast.work4j.data.impl.SchedulerMongoRepisotory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +34,17 @@ public class MainConfiguration {
     private String databaseName;
     
     /**
+     * The mongo client for communication
+     * 
+     * @return Returns mongo client
+     */
+    @Lazy
+    @Bean
+    public MongoClient mongoClient(){
+        return MongoClients.create(this.mongoUri);
+    }
+    
+    /**
      * The mongo database for communication
      * 
      * @return Returns mongo database
@@ -42,7 +52,25 @@ public class MainConfiguration {
     @Lazy
     @Bean
     public MongoDatabase mongoDatabase(){
-        return MongoClients.create(this.mongoUri).getDatabase(this.databaseName);
+        return this.mongoClient().getDatabase(this.databaseName);
+    }
+    
+    /**
+     * The scheduler data repository
+     * 
+     * @return Returns data repository
+     */
+    @Lazy
+    @Bean
+    public SchedulerMongoRepisotory schedulerDataRepository(){
+        
+        // create new repository
+        var repo = new SchedulerMongoRepisotory(this.mongoClient(), this.mongoDatabase());
+        
+        // make sure schema is ready
+        repo.ensureSchema();
+        
+        return repo;
     }
     
     /**
@@ -52,12 +80,10 @@ public class MainConfiguration {
      */
     @Lazy
     @Bean
-    public SchedulerController schedulerCtl(){
+    public SchedulerController schedulerController(){
         return SchedulerControllerBuilder
-                .newBuilder()
-                .withJobDefinitions(new JobDefinitionMongoRepository(this.mongoDatabase()))
-                .withJobIterations(new JobIterationMongoRepository(this.mongoDatabase()))
-                .withAgents(new AgentDefinitionMongoRepository(this.mongoDatabase()))
+                .builder()
+                .withDataRepository(this.schedulerDataRepository())
                 .build();
     }
 }

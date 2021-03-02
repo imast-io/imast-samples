@@ -1,16 +1,24 @@
 package io.imast.samples.scheduler.worker;
 
 import io.imast.core.client.ReactiveBaseClient;
-import io.imast.core.client.ReactiveUtils;
 import io.imast.core.discovery.DiscoveryClient;
 import io.imast.work4j.channel.SchedulerChannel;
-import io.imast.work4j.model.exchange.*;
-import io.imast.work4j.model.iterate.*;
-import io.imast.work4j.model.agent.*;
-import io.imast.work4j.model.*;
-import java.util.Optional;
+import io.imast.work4j.model.execution.CompletionSeverity;
+import io.imast.work4j.model.execution.ExecutionIndexEntry;
+import io.imast.work4j.model.execution.ExecutionStatus;
+import io.imast.work4j.model.execution.ExecutionUpdateInput;
+import io.imast.work4j.model.execution.ExecutionsResponse;
+import io.imast.work4j.model.execution.JobExecution;
+import io.imast.work4j.model.iterate.Iteration;
+import io.imast.work4j.model.iterate.IterationInput;
+import io.imast.work4j.model.worker.Worker;
+import io.imast.work4j.model.worker.WorkerHeartbeat;
+import io.imast.work4j.model.worker.WorkerInput;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 /**
  * The implementation of worker channel.
@@ -31,61 +39,90 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
     }
     
     /**
-     * A method to load metadata 
+     * Pull job groups for the given cluster
      * 
-     * @param request The metadata request
-     * @return Returns metadata response
+     * @param tenant The target tenant
+     * @param cluster The target cluster
+     * @return Returns execution index entries
      */
     @Override
-    public Optional<JobMetadataResponse> metadata(JobMetadataRequest request) {
-        
+    public Mono<List<ExecutionIndexEntry>> executionIndex(String tenant, String cluster){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/scheduler/jobs/_metadata"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/executions"))
+                .queryParam("tenant", tenant)
+                .queryParam("cluster", cluster)
                 .build()
                 .toUriString();
         
         // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
-                .post()
+        return this.webClient
+                .get()
                 .uri(url)
-                .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToMono(JobMetadataResponse.class));   
+                .bodyToMono(ExecutionIndexEntry[].class)
+                .map(Arrays::asList);
     }
-
+    
     /**
-     * A method to do status exchange
+     * Exchange current status with modified entries
      * 
-     * @param status The current status to exchange
-     * @return Returns status exchange result
+     * @param ids The executions request ids
+     * @return Returns executions response
      */
     @Override
-    public Optional<JobStatusExchangeResponse> statusExchange(JobStatusExchangeRequest status) {
+    public Mono<ExecutionsResponse> executions(List<String> ids){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/scheduler/jobs/_exchange"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/executions"))
+                .queryParam("ids", ids)
                 .build()
                 .toUriString();
         
         // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
-                .post()
+        return this.webClient
+                .get()
                 .uri(url)
-                .body(BodyInserters.fromValue(status))
                 .retrieve()
-                .bodyToMono(JobStatusExchangeResponse.class));     
+                .bodyToMono(ExecutionsResponse.class);
     }
-
+    
     /**
-     * Create an iteration in controller
+     * Completes the job execution in scheduler
      * 
-     * @param iteration The iteration to insert
-     * @return Returns inserted iteration
+     * @param id The identifier of job execution
+     * @param severity The severity of completion
+     * @return Returns updated job execution
      */
     @Override
-    public Optional<JobIteration> iterate(JobIteration iteration) {
+    public Mono<JobExecution> complete(String id, CompletionSeverity severity){
         
+        // build URL
+        var url = UriComponentsBuilder
+                .fromUriString(String.format(this.getApiUrl("api/v1/scheduler/executions/%s"), id))
+                .build()
+                .toUriString();
+        
+        // the input to submit
+        var input = new ExecutionUpdateInput(ExecutionStatus.COMPLETED, severity);
+        
+        // get the mono stream
+        return this.webClient
+                .put()
+                .uri(url)
+                .body(BodyInserters.fromValue(input))
+                .retrieve()
+                .bodyToMono(JobExecution.class);   
+    }
+    
+    /**
+     * Adds iteration information to scheduler
+     * 
+     * @param iteration The iteration to register
+     * @return Returns registered iteration
+     */
+    @Override
+    public Mono<Iteration> iterate(IterationInput iteration){
         // build URL
         var url = UriComponentsBuilder
                 .fromUriString(this.getApiUrl("api/v1/scheduler/iterations"))
@@ -93,82 +130,58 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
                 .toUriString();
         
         // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
+        return this.webClient
                 .post()
                 .uri(url)
                 .body(BodyInserters.fromValue(iteration))
                 .retrieve()
-                .bodyToMono(JobIteration.class));     
+                .bodyToMono(Iteration.class);   
     }
-
+    
     /**
-     * A method to change status of job 
+     * Registers worker into the scheduler
      * 
-     * @param id The job id
-     * @param status The job status
-     * @return Returns modified definition
+     * @param input The worker input to register
+     * @return Returns registered worker
      */
     @Override
-    public Optional<JobDefinition> markAs(String id, JobStatus status) {
+    public Mono<Worker> registration(WorkerInput input){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(String.format(this.getApiUrl("api/v1/scheduler/jobs/%s/status?status=%s"), id, status))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/workers"))
                 .build()
                 .toUriString();
-        
+                
         // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
-                .put()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(JobDefinition.class));  
-    }
-
-    /**
-     * Add agent definition into the system
-     * 
-     * @param agent The agent to add
-     * @return Returns added agent
-     */
-    @Override
-    public Optional<AgentDefinition> registration(AgentDefinition agent) {
-
-        // build URL
-        var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/scheduler/agents"))
-                .build()
-                .toUriString();
-        
-        // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
+        return this.webClient
                 .post()
                 .uri(url)
-                .body(BodyInserters.fromValue(agent))
+                .body(BodyInserters.fromValue(input))
                 .retrieve()
-                .bodyToMono(AgentDefinition.class));      
+                .bodyToMono(Worker.class);  
     }
-
+    
     /**
-     * Add heartbeat to agent
+     * Send a Heartbeat signal to from worker scheduler
      * 
-     * @param id The agent id
-     * @param health The new health info
-     * @return Returns modified agent
+     * @param id The identifier of worker instance
+     * @param heartbeat The worker reported heartbeat
+     * @return Returns updated agent definition
      */
     @Override
-    public Optional<AgentDefinition> heartbeat(String id, AgentHealth health) {
+    public Mono<Worker> heartbeat(String id, WorkerHeartbeat heartbeat){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl(String.format("api/v1/scheduler/agents/%s/health", id)))
+                .fromUriString(this.getApiUrl(String.format("api/v1/scheduler/workers/%s", id)))
                 .build()
                 .toUriString();
         
         // get the mono stream
-        return ReactiveUtils.blockOptional(this.webClient
-                .put()
+        return this.webClient
+                .post()
                 .uri(url)
-                .body(BodyInserters.fromValue(health))
+                .body(BodyInserters.fromValue(heartbeat))
                 .retrieve()
-                .bodyToMono(AgentDefinition.class));
-    }
+                .bodyToMono(Worker.class);   
+    }    
 }

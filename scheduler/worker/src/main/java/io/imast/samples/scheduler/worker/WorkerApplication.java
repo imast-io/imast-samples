@@ -3,6 +3,7 @@ package io.imast.samples.scheduler.worker;
 import io.imast.core.Lang;
 import io.imast.work4j.worker.ClusteringType;
 import io.imast.work4j.worker.WorkerConfiguration;
+import io.imast.work4j.worker.WorkerConnector;
 import io.imast.work4j.worker.WorkerException;
 import io.imast.work4j.worker.controller.WorkerControllerBuilder;
 import io.vavr.control.Try;
@@ -19,7 +20,7 @@ public class WorkerApplication {
      */
     public static void main(String[] args){
         
-        var local = false;
+        var local = true;
         
         // indicate if agent (worker) is acting as supervisor
         // Note: any cluster should have only one supervising instance
@@ -48,7 +49,7 @@ public class WorkerApplication {
                 
         var config = WorkerConfiguration.builder()
                 .cluster(cluster)
-                .worker(worker)
+                .name(worker)
                 .clusteringType(ClusteringType.JDBC)
                 .dataSourceUri(String.format("jdbc:mysql://%s:8810/quartz_scheduler", mysqlhost))
                 .dataSource("jdbcds")
@@ -69,13 +70,13 @@ public class WorkerApplication {
         var workerController = Try.of(() -> WorkerControllerBuilder
                 .builder(config)
                 .withChannel(channel)
+                .withWorker(new WorkerConnector(channel).connect(config))
                 .withJobExecutor("WAIT_JOB_TYPE", context -> new WaitJob(context))
                 .withModule("WAIT_JOB_TYPE", "WAITER", new WaiterModule())
                 .build()).getOrNull();
         
         try {
         
-            workerController.initialize();
             workerController.start();
             
         } catch (WorkerException ex) {

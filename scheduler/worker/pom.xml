@@ -33,19 +33,19 @@
         <dependency>
             <groupId>io.imast</groupId>
             <artifactId>work4j-worker</artifactId>
-            <version>0.0.1.RC1</version>
+            <version>0.0.1.RC2</version>
         </dependency>
         
         <dependency>
             <groupId>io.imast</groupId>
             <artifactId>work4j-model</artifactId>
-            <version>0.0.1.RC1</version>
+            <version>0.0.1.RC2</version>
         </dependency>
         
         <dependency>
             <groupId>io.imast</groupId>
             <artifactId>work4j-channel</artifactId>
-            <version>0.0.1.RC1</version>
+            <version>0.0.1.RC2</version>
         </dependency>
         
 	<dependency>

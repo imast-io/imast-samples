@@ -17,5 +17,4 @@ public class WaiterModule {
     public void waitMillis(long millis){
         Lang.wait((int)millis);
     }
-    
 }
