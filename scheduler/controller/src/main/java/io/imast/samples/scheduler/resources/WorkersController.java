@@ -1,8 +1,8 @@
 package io.imast.samples.scheduler.resources;
 
 import io.imast.work4j.controller.SchedulerController;
-import io.imast.work4j.model.worker.WorkerHeartbeat;
-import io.imast.work4j.model.worker.WorkerInput;
+import io.imast.work4j.model.cluster.WorkerHeartbeat;
+import io.imast.work4j.model.cluster.WorkerInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
