@@ -2,6 +2,7 @@ package io.imast.samples.scheduler.worker;
 
 import io.imast.core.Lang;
 import io.imast.work4j.worker.ClusteringType;
+import io.imast.work4j.worker.PersistenceType;
 import io.imast.work4j.worker.WorkerConfiguration;
 import io.imast.work4j.worker.WorkerConnector;
 import io.imast.work4j.worker.WorkerException;
@@ -36,7 +37,7 @@ public class WorkerApplication {
         String mysqlhost = "mysqlcluster";
         
         if(local){
-            pollRate = Duration.ofMinutes(1).toMillis();
+            pollRate = Duration.ofSeconds(30).toMillis();
             env = "localhost";
             mysqlhost = "localhost";
         }
@@ -50,7 +51,8 @@ public class WorkerApplication {
         var config = WorkerConfiguration.builder()
                 .cluster(cluster)
                 .name(worker)
-                .clusteringType(ClusteringType.JDBC)
+                .clusteringType(ClusteringType.EXCLUSIVE)
+                .persistenceType(PersistenceType.MYSQL)
                 .dataSourceUri(String.format("jdbc:mysql://%s:8810/quartz_scheduler", mysqlhost))
                 .dataSource("jdbcds")
                 .dataSourceUsername("workeruser")
@@ -58,7 +60,7 @@ public class WorkerApplication {
                 .pollingRate(pollRate)
                 .parallelism(8L)
                 .workerRegistrationTries(10)
-                .heartbeatRate(Duration.ofMinutes(2).toMillis())
+                .heartbeatRate(Duration.ofSeconds(15).toMillis())
                 .build();
         
         // the localhost discovery client (use null in docker environment)
@@ -70,7 +72,7 @@ public class WorkerApplication {
         var workerController = Try.of(() -> WorkerControllerBuilder
                 .builder(config)
                 .withChannel(channel)
-                .withWorker(new WorkerConnector(channel).connect(config))
+                .withWorker(new WorkerConnector(config, channel).connect())
                 .withJobExecutor("WAIT_JOB", context -> new WaitJob(context))
                 .withModule("WAIT_JOB", "WAITER", new WaiterModule())
                 .build()).getOrNull();

@@ -34,14 +34,13 @@ public class ExecutionsController {
     /**
      * Gets all the executions in the system
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster 
      * @param type The optional type parameter
      * @return Returns set of executions
      */
     @GetMapping(path = "")
-    public ResponseEntity<?> getAll(@RequestParam(required = false) String tenant, @RequestParam(required = false) String cluster, @RequestParam(required = false) String type){
-        return ResponseEntity.ok(this.schedulerController.getAllExecutions(tenant, cluster, type));
+    public ResponseEntity<?> getAll(@RequestParam(required = false) String cluster, @RequestParam(required = false) String type){
+        return ResponseEntity.ok(this.schedulerController.getAllExecutions(cluster, type));
     }
         
     /**
@@ -69,7 +68,6 @@ public class ExecutionsController {
     /**
      * Gets all executions by page 
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster 
      * @param type The optional type parameter 
      * @param page The page number
@@ -77,20 +75,19 @@ public class ExecutionsController {
      * @return Returns set of job executions
      */
     @GetMapping(path = "", params = {"page", "size"})
-    public ResponseEntity<?> getPage(@RequestParam(required = false) String tenant, @RequestParam(required = false) String cluster, @RequestParam(required = false) String type, @RequestParam Integer page, @RequestParam Integer size){
-        return ResponseEntity.ok(this.schedulerController.getExecutionsPage(tenant, cluster, type, page, size));
+    public ResponseEntity<?> getPage(@RequestParam(required = false) String cluster, @RequestParam(required = false) String type, @RequestParam Integer page, @RequestParam Integer size){
+        return ResponseEntity.ok(this.schedulerController.getExecutionsPage(cluster, type, page, size));
     }
     
     /**
      * Gets all executions index 
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster 
      * @return Returns job execution index
      */
-    @GetMapping(path = "", params = {"tenant", "cluster"})
-    public ResponseEntity<?> getExecutionIndex(@RequestParam(required = false) String tenant, @RequestParam(required = true) String cluster){
-        return ResponseEntity.ok(this.schedulerController.getExecutionIndex(tenant, cluster));
+    @GetMapping(path = "", params = {"cluster"})
+    public ResponseEntity<?> getExecutionIndex(@RequestParam(required = true) String cluster){
+        return ResponseEntity.ok(this.schedulerController.getExecutionIndex(cluster));
     }
     
     /**

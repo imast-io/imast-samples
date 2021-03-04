@@ -31,20 +31,18 @@ public class JobsController {
     /**
      * Gets all the jobs in the system
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster 
      * @param type The optional type parameter
      * @return Returns set of jobs
      */
     @GetMapping(path = "")
-    public ResponseEntity<?> getAll(@RequestParam(required = false) String tenant, @RequestParam(required = false) String cluster, @RequestParam(required = false) String type){
-        return ResponseEntity.ok(this.schedulerController.getAllJobs(tenant, cluster, type));
+    public ResponseEntity<?> getAll( @RequestParam(required = false) String cluster, @RequestParam(required = false) String type){
+        return ResponseEntity.ok(this.schedulerController.getAllJobs(cluster, type));
     }
         
     /**
      * Gets all job definitions by page 
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster 
      * @param type The optional type parameter 
      * @param page The page
@@ -52,8 +50,8 @@ public class JobsController {
      * @return Returns set of job definitions
      */
     @GetMapping(path = "", params = {"page", "size"})
-    public ResponseEntity<?> getPage(@RequestParam(required = false) String tenant, @RequestParam(required = false) String cluster, @RequestParam(required = false) String type, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer size){
-        return ResponseEntity.ok(this.schedulerController.getJobPage(tenant, cluster, type, page, size));
+    public ResponseEntity<?> getPage(@RequestParam(required = false) String cluster, @RequestParam(required = false) String type, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer size){
+        return ResponseEntity.ok(this.schedulerController.getJobPage(cluster, type, page, size));
     }
     
     /**

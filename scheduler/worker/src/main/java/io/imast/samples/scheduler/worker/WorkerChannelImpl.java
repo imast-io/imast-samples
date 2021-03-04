@@ -3,17 +3,16 @@ package io.imast.samples.scheduler.worker;
 import io.imast.core.client.ReactiveBaseClient;
 import io.imast.core.discovery.DiscoveryClient;
 import io.imast.work4j.channel.SchedulerChannel;
+import io.imast.work4j.model.cluster.ClusterWorker;
 import io.imast.work4j.model.execution.CompletionSeverity;
 import io.imast.work4j.model.execution.ExecutionIndexEntry;
 import io.imast.work4j.model.execution.ExecutionStatus;
 import io.imast.work4j.model.execution.ExecutionUpdateInput;
-import io.imast.work4j.model.execution.ExecutionsResponse;
 import io.imast.work4j.model.execution.JobExecution;
 import io.imast.work4j.model.iterate.Iteration;
 import io.imast.work4j.model.iterate.IterationInput;
-import io.imast.work4j.model.cluster.Worker;
 import io.imast.work4j.model.cluster.WorkerHeartbeat;
-import io.imast.work4j.model.cluster.WorkerInput;
+import io.imast.work4j.model.cluster.WorkerJoinInput;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -42,16 +41,14 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
     /**
      * Pull job groups for the given cluster
      * 
-     * @param tenant The target tenant
      * @param cluster The target cluster
      * @return Returns execution index entries
      */
     @Override
-    public Mono<List<ExecutionIndexEntry>> executionIndex(String tenant, String cluster){
+    public Mono<List<ExecutionIndexEntry>> executionIndex(String cluster){
         // build URL
         var url = UriComponentsBuilder
                 .fromUriString(this.getApiUrl("api/v1/scheduler/executions"))
-                .queryParam("tenant", tenant)
                 .queryParam("cluster", cluster)
                 .build()
                 .toUriString();
@@ -147,10 +144,10 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
      * @return Returns registered worker
      */
     @Override
-    public Mono<Worker> registration(WorkerInput input){
+    public Mono<ClusterWorker> registration(WorkerJoinInput input){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl("api/v1/scheduler/workers"))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/clusters"))
                 .build()
                 .toUriString();
                 
@@ -160,21 +157,20 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
                 .uri(url)
                 .body(BodyInserters.fromValue(input))
                 .retrieve()
-                .bodyToMono(Worker.class);  
+                .bodyToMono(ClusterWorker.class);  
     }
     
     /**
      * Send a Heartbeat signal to from worker scheduler
      * 
-     * @param id The identifier of worker instance
      * @param heartbeat The worker reported heartbeat
      * @return Returns updated agent definition
      */
     @Override
-    public Mono<Worker> heartbeat(String id, WorkerHeartbeat heartbeat){
+    public Mono<ClusterWorker> heartbeat(WorkerHeartbeat heartbeat){
         // build URL
         var url = UriComponentsBuilder
-                .fromUriString(this.getApiUrl(String.format("api/v1/scheduler/workers/%s", id)))
+                .fromUriString(this.getApiUrl("api/v1/scheduler/clusters"))
                 .build()
                 .toUriString();
         
@@ -184,6 +180,6 @@ public class WorkerChannelImpl extends ReactiveBaseClient implements SchedulerCh
                 .uri(url)
                 .body(BodyInserters.fromValue(heartbeat))
                 .retrieve()
-                .bodyToMono(Worker.class);   
+                .bodyToMono(ClusterWorker.class);   
     }    
 }

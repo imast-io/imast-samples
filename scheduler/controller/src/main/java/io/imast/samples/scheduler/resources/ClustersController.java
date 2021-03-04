@@ -2,7 +2,7 @@ package io.imast.samples.scheduler.resources;
 
 import io.imast.work4j.controller.SchedulerController;
 import io.imast.work4j.model.cluster.WorkerHeartbeat;
-import io.imast.work4j.model.cluster.WorkerInput;
+import io.imast.work4j.model.cluster.WorkerJoinInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author davitp
  */
 @RestController
-@RequestMapping("/api/v1/scheduler/workers")
-public class WorkersController {
+@RequestMapping("/api/v1/scheduler/clusters")
+public class ClustersController {
     
     /**
      * The scheduler controller
@@ -31,24 +30,24 @@ public class WorkersController {
     private SchedulerController schedulerController;
     
     /**
-     * Get all workers
+     * Get all clusters
      * 
      * @return Returns all workers
      */
     @GetMapping(path = "")
     public ResponseEntity<?> get(){
-        return ResponseEntity.ok(this.schedulerController.getAllWorkers());
+        return ResponseEntity.ok(this.schedulerController.getAllClusters());
     }
     
     /**
-     * Get worker by id
+     * Get cluster by id
      * 
-     * @param id The code of agent
-     * @return Returns agent
+     * @param id The code of cluster
+     * @return Returns cluster
      */
     @GetMapping(path = "{id}")
     public ResponseEntity<?> getSingle(@PathVariable String id){
-        return ResponseEntity.of(this.schedulerController.getWorkerById(id));
+        return ResponseEntity.of(this.schedulerController.getClusterById(id));
     }
     
     /**
@@ -58,20 +57,19 @@ public class WorkersController {
      * @return Returns saved worker
      */
     @PostMapping(path = "")
-    public ResponseEntity<?> postOne(@RequestBody WorkerInput worker){
-        return ResponseEntity.ok(this.schedulerController.insertWorker(worker));
+    public ResponseEntity<?> joinOne(@RequestBody WorkerJoinInput worker){
+        return ResponseEntity.ok(this.schedulerController.joinWorker(worker));
     }
     
     /**
      * Update worker heartbeat
      * 
-     * @param id The worker id
      * @param heartbeat The heartbeat to update
      * @return Returns saved worker
      */
-    @PutMapping(path = "{id}")
-    public ResponseEntity<?> putHealth(@PathVariable String id, @RequestBody WorkerHeartbeat heartbeat){
-        return ResponseEntity.ok(this.schedulerController.updateWorker(id, heartbeat));
+    @PutMapping(path = "")
+    public ResponseEntity<?> putHealth(@RequestBody WorkerHeartbeat heartbeat){
+        return ResponseEntity.ok(this.schedulerController.updateWorker(heartbeat));
     }
     
     /**
@@ -81,20 +79,17 @@ public class WorkersController {
      * @return Returns deleted agent if available
      */
     @DeleteMapping(path = "{id}")
-    public ResponseEntity<?> deleteWorkerById(@PathVariable String id){
-        return ResponseEntity.of(this.schedulerController.deleteWorkerById(id));
+    public ResponseEntity<?> deleteClusterById(@PathVariable String id){
+        return ResponseEntity.of(this.schedulerController.deleteClusterById(id));
     }
     
     /**
-     * Delete worker (idle or all)
+     * Delete all clusters
      * 
-     * @param idleOnly Indicates if only idles should be deleted
-     * @param cluster The target cluster
-     * @param name The target name
-     * @return Returns deleted workers if available
+     * @return Returns number of deleted
      */
-    @DeleteMapping(path = "", params = { "idleOnly", "cluster", "name" })
-    public ResponseEntity<?> deleteWorkers(@RequestParam boolean idleOnly, @RequestParam(required = false) String cluster, @RequestParam(required = false) String name){
-        return ResponseEntity.ok(idleOnly ? this.schedulerController.deleteIdleWorkers(cluster, name) : this.schedulerController.deleteWorkers(cluster, name));
+    @DeleteMapping(path = "")
+    public ResponseEntity<?> deleteWorkers(){
+        return ResponseEntity.ok(this.schedulerController.deleteAllClusters());
     }
 }
