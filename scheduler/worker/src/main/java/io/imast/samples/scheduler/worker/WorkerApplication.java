@@ -9,11 +9,13 @@ import io.imast.work4j.worker.WorkerException;
 import io.imast.work4j.worker.controller.WorkerControllerBuilder;
 import io.vavr.control.Try;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 /**
  * The client test app
  * 
  * @author davitp
  */
+@Slf4j
 public class WorkerApplication {
 
     /**
@@ -21,23 +23,15 @@ public class WorkerApplication {
      */
     public static void main(String[] args){
         
-        var local = true;
+        var local = false;
         
-        // indicate if agent (worker) is acting as supervisor
-        // Note: any cluster should have only one supervising instance
-        var supervise = "SUPERVISOR".equalsIgnoreCase(System.getenv("IMAST_WORKER_ROLE"));
-        
-        Long pollRate = 0L;
-        
-        if(supervise){
-            pollRate = Duration.ofMinutes(1).toMillis();
-        }
+        // indicate polling rate for worker        
+        Long pollRate = Duration.ofSeconds(30L).toMillis();
         
         String env = null;
         String mysqlhost = "mysqlcluster";
         
         if(local){
-            pollRate = Duration.ofSeconds(30).toMillis();
             env = "localhost";
             mysqlhost = "localhost";
         }
@@ -51,7 +45,7 @@ public class WorkerApplication {
         var config = WorkerConfiguration.builder()
                 .cluster(cluster)
                 .name(worker)
-                .clusteringType(ClusteringType.EXCLUSIVE)
+                .clusteringType(ClusteringType.BALANCED)
                 .persistenceType(PersistenceType.MYSQL)
                 .dataSourceUri(String.format("jdbc:mysql://%s:8810/quartz_scheduler", mysqlhost))
                 .dataSource("jdbcds")
@@ -69,12 +63,17 @@ public class WorkerApplication {
         // worker channel implementation instance
         var channel = new WorkerChannelImpl(discovery);
         
+        // connect and get worker
+        var clusterWorker = new WorkerConnector(config, channel).connect();
+        
+        log.info(String.format("Connected to cluster (%s) with as worker %s in %s mode", clusterWorker.getCluster(), clusterWorker.getName(), clusterWorker.getKind()));
+        
         var workerController = Try.of(() -> WorkerControllerBuilder
                 .builder(config)
                 .withChannel(channel)
-                .withWorker(new WorkerConnector(config, channel).connect())
-                .withJobExecutor("WAIT_JOB", context -> new WaitJob(context))
-                .withModule("WAIT_JOB", "WAITER", new WaiterModule())
+                .withWorker(clusterWorker)
+                .withJobExecutor("ECHO_JOB", context -> new EchoJob(context))
+                .withModule("ECHO_JOB", "PRINTER", new PrinterModule())
                 .build()).getOrNull();
         
         try {

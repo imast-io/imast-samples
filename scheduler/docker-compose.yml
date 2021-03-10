@@ -53,26 +53,13 @@ services:
     depends_on:
       - mongoctl
       
-  worker-super:
-    image: worker  
-    build: ./worker
-    container_name: worker_super
-    environment:
-      - IMAST_WORKER_ROLE=SUPERVISOR
-    networks:
-      - imastnetwork
-    depends_on:
-      - mysqlcluster
-      
   worker:
     image: worker  
     build: ./worker
-    environment:
-      - IMAST_WORKER_ROLE=WORKER
     networks:
       - imastnetwork
     depends_on:
       - mysqlcluster
-      
+            
 
 
